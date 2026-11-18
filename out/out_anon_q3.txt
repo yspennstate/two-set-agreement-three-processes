@@ -1,0 +1,16 @@
+n=3 q=3 k=2 p=2/5: OPTIMAL OPT=117/625 sim=117/625 match=True
+   control t<=OPT-1: INFEASIBLE (must be INFEASIBLE); t<=OPT: OPTIMAL (must be FEASIBLE or OPTIMAL)
+   input 012 fail counts [1, 2, 2, 2, 1, 0, 0]
+   input 021 fail counts [1, 2, 2, 2, 1, 0, 0]
+   input 102 fail counts [1, 2, 2, 2, 1, 0, 0]
+   input 120 fail counts [1, 2, 2, 2, 1, 0, 0]
+   input 201 fail counts [1, 2, 2, 2, 1, 0, 0]
+   input 210 fail counts [1, 2, 2, 2, 1, 0, 0]
+n=3 q=3 k=2 p=1/2: OPTIMAL OPT=1/8 sim=1/8 match=True
+   control t<=OPT-1: INFEASIBLE (must be INFEASIBLE); t<=OPT: OPTIMAL (must be FEASIBLE or OPTIMAL)
+   input 012 fail counts [1, 2, 2, 2, 1, 0, 0]
+   input 021 fail counts [1, 2, 2, 2, 1, 0, 0]
+   input 102 fail counts [1, 2, 2, 2, 1, 0, 0]
+   input 120 fail counts [1, 2, 2, 2, 1, 0, 0]
+   input 201 fail counts [1, 2, 2, 2, 1, 0, 0]
+   input 210 fail counts [1, 2, 2, 2, 1, 0, 0]
