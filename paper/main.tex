@@ -24,7 +24,7 @@ Jerusalem, Givat Ram,}\\
 \maketitle
 
 \begin{abstract}
-Three synchronous processes with identifiers exchange one round of messages, and each of the six directed links delivers its message independently with probability $p$. Each process holds one of $Q\ge3$ input values and decides a value it has seen. The execution fails when the three decisions are distinct, so the task is $2$-set agreement. For every $p$ and every $Q\ge3$ we determine the least failure probability, on the worst input, of a deterministic algorithm. It is a polynomial in $p$ on each of four pieces, which meet at $1-1/\sqrt2$, at the real root $r\approx0.3522$ of $2x^3-4x^2+4x-1$, and at $1/2$, and each piece is attained by an explicit rule. For three values a single heard message determines the input, so an algorithm becomes a choice of source for each process and its failure probability is a permanent. Enumerating the $1728$ such choices gives the lower bound.
+Three synchronous processes with identifiers exchange one round of messages, and each of the six directed links delivers its message independently with probability $p$. Each process holds one of $Q\ge3$ input values and decides a value it has seen. The execution fails when the three decisions are distinct, so the task is $2$-set agreement. For every $p$ and every $Q\ge3$ we determine the least failure probability, on the worst input, of a deterministic algorithm. It is a polynomial in $p$ on each of four pieces, which meet at $1-1/\sqrt2$, at the real root $r\approx0.3522$ of $2p^3-4p^2+4p-1$, and at $1/2$, and each piece is attained by an explicit rule. For three values a single heard message determines the input, so an algorithm becomes a choice of source for each process and its failure probability is a permanent. Enumerating the $1728$ such choices gives the lower bound.
 \end{abstract}
 
 \noindent\textit{Keywords:} set agreement, distributed computing, message loss, permanent, exhaustive search.
@@ -35,7 +35,7 @@ Three synchronous processes with identifiers exchange one round of messages, and
 
 Fraigniaud, Patt-Shamir and Rajsbaum \cite{FPR} studied coordination when every message is lost independently. There are $n$ synchronous processes on a complete network, with identifiers. In each round every process sends its state to every other process, and each message is delivered independently with probability $p$; we write $q=1-p$. They determined the optimal error of consensus for two processes, and in their concluding section they observe that other tasks, among them set agreement, have been studied in dynamic networks \cite{Biely,FNP} but not in their stochastic setting \cite{FPR}. Knight, Lehnherr and Rajsbaum \cite{KLR} give an epistemic analysis of randomized coordinated attack. In $k$-set agreement, introduced by Chaudhuri \cite{Chaudhuri}, each process decides an input value and at most $k$ distinct values may be decided; consensus is the case $k=1$.
 
-We treat the first case of set agreement in this model: three processes, one round and $k=2$. Each process decides a value it has seen, and the execution fails when the three decisions are distinct. With two input values this cannot happen, so the inputs are taken from $Q\ge3$ values. As in \cite{FPR,FPR26} the algorithms are deterministic, and an algorithm is measured by its failure probability on the worst input. Theorem~\ref{thm:main} gives the optimum for every $p$ and every $Q\ge3$. It has four polynomial pieces, and each is attained by a short rule. For $p$ up to $r=0.352201\dots$, the real root of $2x^3-4x^2+4x-1$, a process that hears exactly one message adopts it, and the two rules used there differ in what a process does when it hears both; for $p\ge1/2$ every process decides the smallest value it has seen. The companion paper \cite{Companion} treats consensus for three processes in one round in the same model.
+We treat the first case of set agreement in this model: three processes, one round and $k=2$. Each process decides a value it has seen, and the execution fails when the three decisions are distinct. With two input values this cannot happen, so the inputs are taken from $Q\ge3$ values. As in \cite{FPR,FPR26} the algorithms are deterministic, and an algorithm is measured by its failure probability on the worst input. Theorem~\ref{thm:main} gives the optimum for every $p$ and every $Q\ge3$. It has four polynomial pieces, and each is attained by a short rule. For $p$ up to $r=0.352201\dots$, the real root of $2p^3-4p^2+4p-1$, a process that hears exactly one message adopts it, and the two rules used there differ in what a process does when it hears both; for $p\ge1/2$ every process decides the smallest value it has seen. The companion paper \cite{Companion} treats consensus for three processes in one round in the same model.
 
 The proof rests on one observation. For $Q=3$ and an input with three distinct values, a view in which a process hears at least one message determines the input. So the six inputs that can fail do not interact, and on each of them an algorithm amounts to choosing, for every process and every set of messages it may receive, the process whose value it decides. The failure probability is then the permanent of a $3\times3$ matrix (Section~\ref{sec:sources}), and enumerating the $12^3=1728$ choices gives the lower bound for $Q=3$ (Section~\ref{sec:lower}). Restricting the inputs to three values carries this lower bound to every $Q$. The four rules are analysed by hand on every input with three distinct values, for every $Q$ (Section~\ref{sec:upper}). A constraint solver run over the full space of algorithms gives the same optimum at fifteen values of $p$ for $Q=3$ and at five values for $Q=4$ (Section~\ref{sec:check}).
 
@@ -79,7 +79,7 @@ E_S(p)&=q\,(1-5p+13p^2-14p^3+8p^4-2p^5),\\
 E_L(p)&=q^2(p^2+q^2),\\
 E_m(p)&=q^3,
 \end{align*}
-and let $r=0.352201\dots$ be the real root of $2x^3-4x^2+4x-1$; Section~\ref{sec:lower} shows that it is the only one.
+and let $r=0.352201\dots$ be the real root of $2p^3-4p^2+4p-1$; Section~\ref{sec:lower} shows that it is the only one.
 
 \begin{theorem}\label{thm:main}
 For every $Q\ge3$ and every $p\in[0,1]$,
@@ -286,13 +286,15 @@ $\OPT_Q(p)$ & least $E(A)$ over deterministic one-round algorithms & Section~\re
 $c_k(A,x)$ & number of failing patterns with $k$ delivered links & \eqref{eq:counts} \\
 $C$, $S$, $L$, $m$ & the four rules & Section~\ref{sec:result} \\
 $E_C$, $E_S$, $E_L$, $E_m$ & their failure probabilities & Section~\ref{sec:result} \\
-$r$ & real root of $2x^3-4x^2+4x-1$, $r=0.352201\dots$ & Section~\ref{sec:intro} \\
+$R$ & one of the rules $C,S,L,m$ & Theorem~\ref{thm:main} \\
+$r$ & real root of $2p^3-4p^2+4p-1$, $r=0.352201\dots$ & Section~\ref{sec:intro} \\
 $Z$ & anonymous rule for $Q=3$ & Remark~\ref{rem:anon} \\
 $H_i$ & set of processes that process $i$ hears & Section~\ref{sec:sources} \\
 $\sigma=(\sigma_1,\sigma_2,\sigma_3)$ & source rule & Section~\ref{sec:sources} \\
 $M^\sigma$, $\operatorname{per}$ & source matrix; permanent & \eqref{eq:perm} \\
 $\mathrm{err}_\sigma(p)$, $c_k(\sigma)$ & failure probability and counts of $\sigma$ & \eqref{eq:perm} \\
 $h_a$ & holder of the value $a$ & proof of Proposition~\ref{prop:upper} \\
+$a$, $v$ & input values & proof of Proposition~\ref{prop:upper} \\
 $g$ & the polynomial $2p^3-4p^2+4p-1$ & Section~\ref{sec:lower} \\
 $a/b$ & $p$ as a fraction, for the integer weights $a^k(b-a)^{6-k}$ & Section~\ref{sec:check} \\
 $t$ & objective of the CP-SAT model & Section~\ref{sec:check} \\
