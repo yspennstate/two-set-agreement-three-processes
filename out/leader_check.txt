@@ -1,0 +1,17 @@
+Q=3 rule C: 6 inputs, count vectors [(1, 0, 3, 5, 3, 3, 1)] OK
+Q=3 rule S: 6 inputs, count vectors [(1, 0, 3, 5, 4, 1, 0)] OK
+Q=3 rule L: 6 inputs, count vectors [(1, 2, 2, 2, 1, 0, 0)] OK
+Q=3 rule m: 6 inputs, count vectors [(1, 3, 3, 1, 0, 0, 0)] OK
+Q=4 rule C: 24 inputs, count vectors [(1, 0, 3, 5, 3, 3, 1)] OK
+Q=4 rule S: 24 inputs, count vectors [(1, 0, 3, 5, 4, 1, 0)] OK
+Q=4 rule L: 24 inputs, count vectors [(1, 2, 2, 2, 1, 0, 0)] OK
+Q=4 rule m: 24 inputs, count vectors [(1, 3, 3, 1, 0, 0, 0)] OK
+Q=5 rule C: 60 inputs, count vectors [(1, 0, 3, 5, 3, 3, 1)] OK
+Q=5 rule S: 60 inputs, count vectors [(1, 0, 3, 5, 4, 1, 0)] OK
+Q=5 rule L: 60 inputs, count vectors [(1, 2, 2, 2, 1, 0, 0)] OK
+Q=5 rule m: 60 inputs, count vectors [(1, 3, 3, 1, 0, 0, 0)] OK
+Q=6 rule C: 120 inputs, count vectors [(1, 0, 3, 5, 3, 3, 1)] OK
+Q=6 rule S: 120 inputs, count vectors [(1, 0, 3, 5, 4, 1, 0)] OK
+Q=6 rule L: 120 inputs, count vectors [(1, 2, 2, 2, 1, 0, 0)] OK
+Q=6 rule m: 120 inputs, count vectors [(1, 3, 3, 1, 0, 0, 0)] OK
+ALL OK

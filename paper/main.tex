@@ -1,0 +1,313 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\OPT}{\mathrm{OPT}}
+\setlength{\emergencystretch}{3em}
+
+\title{Optimal one-round set agreement for three processes through stochastic channels}
+\author{Yitzchak Shmalo$^{\,a}$\thanks{Email address:
+\texttt{yitzchak.shmalo@gmail.com} (Yitzchak Shmalo).}\\
+{\small $^{a}$Einstein Institute of Mathematics, The Hebrew University of
+Jerusalem, Givat Ram,}\\
+{\small Jerusalem, Israel}}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Three synchronous processes with identifiers exchange one round of messages, and each of the six directed links delivers its message independently with probability $p$. Each process holds one of $Q\ge3$ input values and decides a value it has seen. The execution fails when the three decisions are distinct, so the task is $2$-set agreement. For every $p$ and every $Q\ge3$ we determine the least failure probability, on the worst input, of a deterministic algorithm. It is a polynomial in $p$ on each of four pieces, which meet at $1-1/\sqrt2$, at the real root $r\approx0.3522$ of $2x^3-4x^2+4x-1$, and at $1/2$, and each piece is attained by an explicit rule. For three values a single heard message determines the input, so an algorithm becomes a choice of source for each process and its failure probability is a permanent. Enumerating the $1728$ such choices gives the lower bound.
+\end{abstract}
+
+\noindent\textit{Keywords:} set agreement, distributed computing, message loss, permanent, exhaustive search.
+
+\noindent\textit{2020 Mathematics Subject Classification:} 68W15, 68Q87, 68M15.
+
+\section{Introduction}\label{sec:intro}
+
+Fraigniaud, Patt-Shamir and Rajsbaum \cite{FPR} studied coordination when every message is lost independently. There are $n$ synchronous processes on a complete network, with identifiers. In each round every process sends its state to every other process, and each message is delivered independently with probability $p$; we write $q=1-p$. They determined the optimal error of consensus for two processes, and in their concluding section they observe that other tasks, among them set agreement, have been studied in dynamic networks but not in their stochastic setting \cite{FPR}. In $k$-set agreement, introduced by Chaudhuri \cite{Chaudhuri}, each process decides an input value and at most $k$ distinct values may be decided; consensus is the case $k=1$.
+
+We treat the first case of set agreement in this model: three processes, one round and $k=2$. Each process decides a value it has seen, and the execution fails when the three decisions are distinct. With two input values this cannot happen, so the inputs are taken from $Q\ge3$ values. As in \cite{FPR,FPR26} the algorithms are deterministic, and an algorithm is measured by its failure probability on the worst input. Theorem~\ref{thm:main} gives the optimum for every $p$ and every $Q\ge3$. It has four polynomial pieces, and each is attained by a short rule. For $p$ up to $r=0.352201\dots$, the real root of $2x^3-4x^2+4x-1$, a process that hears exactly one message adopts it, and the two rules used there differ in what a process does when it hears both; for $p\ge1/2$ every process decides the smallest value it has seen. The companion paper \cite{Companion} treats consensus for three processes in one round in the same model.
+
+The proof rests on one observation. For $Q=3$ and an input with three distinct values, a view in which a process hears at least one message determines the input. So the six inputs that can fail do not interact, and on each of them an algorithm amounts to choosing, for every process and every set of messages it may receive, the process whose value it decides. The failure probability is then the permanent of a $3\times3$ matrix (Section~\ref{sec:sources}), and enumerating the $12^3=1728$ choices gives the lower bound for $Q=3$ (Section~\ref{sec:lower}). Restricting the inputs to three values carries this lower bound to every $Q$. The four rules are analysed by hand on every input with three distinct values, for every $Q$ (Section~\ref{sec:upper}). A constraint solver run over the full space of algorithms gives the same optimum at fifteen values of $p$ for $Q=3$ and at five values for $Q=4$ (Section~\ref{sec:check}).
+
+\section{Model}\label{sec:model}
+
+There are three processes with identifiers $1,2,3$. Fix $Q\ge3$; process $i$ holds an input $x_i\in\{0,\dots,Q-1\}$. In the single round each process sends its input to the other two, and each of the six directed messages is delivered independently with probability $p$. After the round, the view of process $i$ is its own input together with, for each $j\neq i$, either $x_j$ (if the message from $j$ to $i$ was delivered) or a symbol meaning that nothing arrived from $j$. A deterministic algorithm $A$ assigns to each process $i$ a decision function $\delta_i$ on views, and validity requires the decision to be one of the values in the view. The execution fails when the three decisions are distinct. For an input $x$ let $E_x(A)$ be the probability of failure, and let
+\[
+E(A)=\max_x E_x(A),\qquad \OPT_{Q}(p)=\min_A E(A),
+\]
+the minimum over deterministic one-round algorithms for three processes with $Q$ input values. A delivery pattern is a subset of the six directed links, and a pattern with $k$ delivered links has probability $p^kq^{6-k}$. Hence
+\begin{equation}\label{eq:counts}
+E_x(A)=\sum_{k=0}^{6} c_k(A,x)\,p^kq^{6-k},
+\end{equation}
+where $c_k(A,x)$ is the number of patterns with $k$ delivered links on which the three decisions are distinct. The decision of process $i$ depends only on the two links into $i$, so for a fixed input the three decisions are independent.
+
+\begin{lemma}\label{lem:twovalues}
+An input with at most two distinct values never fails.
+\end{lemma}
+
+\begin{proof}
+Every value in a view is an input value, so by validity every decision is one of the at most two input values.
+\end{proof}
+
+So only the $Q(Q-1)(Q-2)$ inputs with three distinct values matter.
+
+\section{The result}\label{sec:result}
+
+In each of the following rules a process that hears nothing decides its own value. We call an algorithm anonymous if every process uses the same decision function and that function depends only on the own value and the multiset of values received.
+\begin{itemize}
+\item[$C$:] A process that hears exactly one message decides the value in it. A process that hears both messages and sees three distinct values decides the cyclic successor of its own value among these three: the next larger one, or the smallest of the three if its own value is the largest. If it hears both messages and sees fewer than three values, it decides its own value.
+\item[$S$:] A process that hears exactly one message decides the value in it. A process that hears both messages decides the smaller of the two values it receives.
+\item[$L$:] Process~$1$ always decides its own value. Process $j\in\{2,3\}$ decides the value in a message if it hears exactly one, and the value $x_1$ of process~$1$ if it hears both.
+\item[$m$:] A process decides the smallest value in its view.
+\end{itemize}
+Each rule is valid, since it decides a value in the view. The rules $C$, $S$ and $m$ are anonymous. The rule $L$ is not: it uses the identifier of process~$1$. On views with fewer than three values the choices made in $C$ do not matter, by Lemma~\ref{lem:twovalues}.
+
+Define
+\begin{align*}
+E_C(p)&=1-6p+18p^2-27p^3+21p^4-6p^5,\\
+E_S(p)&=q\,(1-5p+13p^2-14p^3+8p^4-2p^5),\\
+E_L(p)&=q^2(p^2+q^2),\\
+E_m(p)&=q^3,
+\end{align*}
+and let $r=0.352201\dots$ be the real root of $2x^3-4x^2+4x-1$; Section~\ref{sec:lower} shows that it is the only one.
+
+\begin{theorem}\label{thm:main}
+For every $Q\ge3$ and every $p\in[0,1]$,
+\[
+\OPT_Q(p)=\min\{E_C(p),E_S(p),E_L(p),E_m(p)\}=
+\begin{cases}
+E_C(p), & 0\le p\le 1-1/\sqrt2,\\
+E_S(p), & 1-1/\sqrt2\le p\le r,\\
+E_L(p), & r\le p\le 1/2,\\
+E_m(p), & 1/2\le p\le 1.
+\end{cases}
+\]
+For each $R\in\{C,S,L,m\}$ and every $p$, $E(R)=E_R(p)$; on every input with three distinct values the counts $(c_0,\dots,c_6)$ of $R$ are those of Table~\ref{tab:counts}.
+\end{theorem}
+
+Here $1-1/\sqrt2=0.292893\dots$. The proof is in Sections~\ref{sec:sources}--\ref{sec:lower}: the upper bound is Proposition~\ref{prop:upper} and the lower bound is Lemma~\ref{lem:restrict} with Proposition~\ref{prop:lower}.
+
+\begin{table}[tbp]
+\centering
+\begin{tabular}{lccccccc}
+\toprule
+rule & $c_0$ & $c_1$ & $c_2$ & $c_3$ & $c_4$ & $c_5$ & $c_6$\\
+\midrule
+$C$ & 1 & 0 & 3 & 5 & 3 & 3 & 1\\
+$S$ & 1 & 0 & 3 & 5 & 4 & 1 & 0\\
+$L$ & 1 & 2 & 2 & 2 & 1 & 0 & 0\\
+$m$ & 1 & 3 & 3 & 1 & 0 & 0 & 0\\
+\bottomrule
+\end{tabular}
+\caption{Numbers of failing patterns with $k$ delivered links, for each of the four rules, on every input with three distinct values and every $Q\ge3$.}\label{tab:counts}
+\end{table}
+
+A few features of the counts can be read off directly. With no delivered link every process decides its own value, so $c_0=1$ and $E(A)\ge q^6$ for every algorithm $A$; since $E_C(p)=1-6p+O(p^2)$, this bound is sharp to first order as $p\to0$. In $C$ and $S$ a single delivered link makes its receiver adopt the sender's value, so $c_1=0$. In $C$ the pattern with all six links delivered fails, since each process decides the successor of its own value. In $m$ the failures are exactly the patterns that miss three particular links (Section~\ref{sec:upper}).
+
+\begin{remark}[Identifiers]\label{rem:anon}
+The third piece is attained by $L$, which uses identifiers, so Theorem~\ref{thm:main} is a statement about processes with identifiers, as in the model of \cite{FPR}. For $Q=3$ the anonymous rule $Z$, in which a process holding $0$ decides $0$ and every other process acts as in $S$, has the counts of $L$ on each of the six inputs with three distinct values; on the input $(0,1,2)$ it coincides with $L$. So for $Q=3$ the optimum is attained by anonymous algorithms for every $p$, and for $Q\ge4$ it is attained by anonymous algorithms outside $(r,1/2)$. For $Q\ge4$ a process holding a value does not know whether it holds the smallest value of the input, and $Z$ has no direct analogue. Whether an anonymous algorithm attains $E_L$ on $(r,1/2)$ for some $Q\ge4$ is open.
+\end{remark}
+
+\section{Three input values: sources and permanents}\label{sec:sources}
+
+In this section $Q=3$. Fix an input $x$ with three distinct values, so $\{x_1,x_2,x_3\}=\{0,1,2\}$.
+
+\begin{lemma}\label{lem:decouple}
+Let $Q=3$. A view on an input $x$ with three distinct values, in which the process hears at least one message, determines $x$. In particular such a view occurs on no other input with three distinct values.
+\end{lemma}
+
+\begin{proof}
+The view of process $i$ contains $x_i$ and $x_j$ for some $j\ne i$, and the sender $j$ is part of the view. The remaining value $x_k$ is the element of $\{0,1,2\}\setminus\{x_i,x_j\}$.
+\end{proof}
+
+Such a view can also occur on an input with two values, but those inputs never fail (Lemma~\ref{lem:twovalues}).
+
+Let $H_i\subseteq\{1,2,3\}\setminus\{i\}$ be the random set of processes that process $i$ hears. Since the values of $x$ are distinct, the decision of process $i$ on the view given by $H_i$ is the value of a unique process $\sigma_i(H_i)\in\{i\}\cup H_i$, its source. Here $\sigma_i(\emptyset)=i$ is forced, $\sigma_i(\{j\})\in\{i,j\}$ and $\sigma_i(\{j,k\})\in\{i,j,k\}$. So each process has $1\cdot2\cdot2\cdot3=12$ source functions, and there are $12^3=1728$ source rules $\sigma=(\sigma_1,\sigma_2,\sigma_3)$. The three decisions are distinct exactly when the three sources are distinct, that is, when $i\mapsto\sigma_i(H_i)$ is a permutation of $\{1,2,3\}$. Let
+\[
+M^\sigma_{i,s}=\Pr[\sigma_i(H_i)=s]=\sum_{H:\,\sigma_i(H)=s}p^{|H|}q^{2-|H|}.
+\]
+The sets $H_1,H_2,H_3$ depend on disjoint sets of links and are independent, so the probability that the sources follow a given permutation $\pi$ is $\prod_i M^\sigma_{i,\pi(i)}$, and the failure probability is
+\begin{equation}\label{eq:perm}
+\mathrm{err}_\sigma(p)=\sum_{\pi}\prod_{i=1}^3 M^\sigma_{i,\pi(i)}=\operatorname{per}M^\sigma,
+\end{equation}
+the permanent of $M^\sigma$. It does not depend on $x$. We write $c_k(\sigma)$ for the number of failing patterns with $k$ delivered links.
+
+\begin{proposition}\label{prop:sources}
+$\OPT_3(p)=\min_\sigma \mathrm{err}_\sigma(p)$, the minimum over the $1728$ source rules.
+\end{proposition}
+
+\begin{proof}
+An algorithm $A$ induces a source rule $\sigma^{A,x}$ on each input $x$ with three distinct values, and $E(A)\ge E_x(A)=\mathrm{err}_{\sigma^{A,x}}(p)\ge\min_\sigma\mathrm{err}_\sigma(p)$. Conversely, fix $\sigma$. On a view of process $i$ that arises on an input $x$ with three distinct values from the set $H$ of heard processes, let $i$ decide $x_{\sigma_i(H)}$; by Lemma~\ref{lem:decouple} this is well defined, and on views with no message it is the own value. On all other views let $i$ decide its own value. The resulting algorithm is valid and induces $\sigma$ on all six inputs with three distinct values, so by Lemma~\ref{lem:twovalues} its error is $\mathrm{err}_\sigma(p)$.
+\end{proof}
+
+So for three values the dependence between inputs disappears, and the problem is a minimum of $1728$ explicit polynomials in $p$.
+
+\section{Upper bound for every number of values}\label{sec:upper}
+
+\begin{proposition}\label{prop:upper}
+Let $Q\ge3$ and $R\in\{C,S,L,m\}$. On every input with three distinct values the counts of $R$ are those of Table~\ref{tab:counts}, and $E(R)=E_R(p)$ for every $p$.
+\end{proposition}
+
+\begin{proof}
+First we reduce to one input. In $L$ the source of process~$1$ is always itself, and a process $j\ne1$ has source $j$ if it hears nothing, $k$ if it hears only $k$, and $1$ if it hears both; this does not depend on the values, so $L$ induces the same source rule on every input with three distinct values. The rules $C$, $S$ and $m$ are the same at every process and use only the order of the values in a view. On an input with values $a<b<c$, write $h_a,h_b,h_c$ for their holders. Then a process decides the value of $h_a$, $h_b$ or $h_c$ under exactly the same delivery events as the holders of $0$, $1$, $2$ on the input $(0,1,2)$ after the processes are renamed accordingly. Renaming the processes permutes the six links and keeps the number of delivered links, so the counts are those of the input $(0,1,2)$, for every $Q\ge3$.
+
+So it is enough to take $x=(0,1,2)$, where process $v+1$ holds $v$. Index the rows and columns of the matrix of \eqref{eq:perm} by values: the entry in row $v$ and column $u$ is the probability that the holder of $v$ decides $u$. A process hears both others with probability $p^2$, only a given one with probability $pq$, and nothing with probability $q^2$. The matrices are
+\[
+M^{m}=\begin{pmatrix}1&0&0\\ p&q&0\\ p&pq&q^2\end{pmatrix},\quad
+M^{L}=\begin{pmatrix}1&0&0\\ p&q^2&pq\\ p&pq&q^2\end{pmatrix},\quad
+M^{S}=\begin{pmatrix}q^2&p&pq\\ p&q^2&pq\\ p&pq&q^2\end{pmatrix},\quad
+M^{C}=\begin{pmatrix}q^2&p&pq\\ pq&q^2&p\\ p&pq&q^2\end{pmatrix}.
+\]
+For instance in $S$ the holder of $0$ decides $1$ when it hears only the holder of $1$ or hears both, with probability $pq+p^2=p$, and in $C$ the holder of $1$ decides $2$ with the same probability.
+
+Rule $m$. The holder of $0$ always decides $0$. The decisions are distinct exactly when the holder of $1$ does not hear the holder of $0$, and the holder of $2$ hears neither the holder of $0$ nor the holder of $1$. These are three distinct links, so the failure probability is $q^3=q^3(p+q)^3$, and expanding gives the counts $(1,3,3,1,0,0,0)$.
+
+Rule $L$. Process~$1$ holds $0$ and always decides it. The decisions are distinct when the holders of $1$ and $2$ decide $1$ and $2$, which happens when both hear nothing, with probability $q^4$, or decide $2$ and $1$, which happens when each hears only the other, with probability $p^2q^2$. The failure probability is $q^4+p^2q^2=q^2(p^2+q^2)$.
+
+Rules $S$ and $C$. Expanding the permanents gives $\operatorname{per}M^S=E_S(p)$ and $\operatorname{per}M^C=E_C(p)$.
+
+In each case the polynomial $\operatorname{per}M^R$ equals $\sum_k c_kp^kq^{6-k}$ with the counts of Table~\ref{tab:counts}, as an identity of polynomials. By Lemma~\ref{lem:twovalues}, $E(R)$ is the common value $E_R(p)$ on the inputs with three distinct values.
+\end{proof}
+
+All the polynomial identities in this proof were checked by expansion in SymPy \cite{SymPy}. Independently of the hand computation, a program that simulates the four rules directly, with no source rules, counts the failing patterns on every input with three distinct values for $Q=3,4,5,6$, that is on $6$, $24$, $60$ and $120$ inputs, and finds the counts of Table~\ref{tab:counts} on every one of them.
+
+\section{Lower bound}\label{sec:lower}
+
+\begin{lemma}\label{lem:restrict}
+$\OPT_Q(p)\ge\OPT_3(p)$ for every $Q\ge3$ and every $p$.
+\end{lemma}
+
+\begin{proof}
+Let $A$ be an algorithm for $Q$ values. On inputs in $\{0,1,2\}^3$ every view contains only values in $\{0,1,2\}$, so restricting the decision functions of $A$ to these views gives a valid algorithm for three values. Its error is a maximum over fewer inputs, hence at most $E(A)$.
+\end{proof}
+
+\begin{proposition}\label{prop:lower}
+$\OPT_3(p)=\min\{E_C(p),E_S(p),E_L(p),E_m(p)\}$ for every $p\in[0,1]$, with the four pieces of Theorem~\ref{thm:main}.
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{prop:sources} it suffices to find the lower envelope of the $1728$ polynomials $\mathrm{err}_\sigma(p)=\sum_kc_k(\sigma)p^kq^{6-k}$. For each source rule the counts $c_k(\sigma)$ are obtained by running through the $64$ patterns; they are integers, so this step is exact. The $1728$ rules give $201$ distinct count vectors. If $c_k(\sigma)\ge c_k(\tau)$ for every $k$ then $\mathrm{err}_\sigma(p)\ge\mathrm{err}_\tau(p)$ for every $p$, since $p^kq^{6-k}\ge0$; discarding every vector that is coordinatewise at least another leaves $16$. For each pair of these $16$ the difference of the polynomials has integer coefficients, and its real roots in $(0,1)$ are isolated exactly in SymPy \cite{SymPy}. On each interval between consecutive roots the order of the $16$ polynomials is constant, and it is read off at the midpoint. The lower envelope has four pieces, $[0,1-1/\sqrt2]$, $[1-1/\sqrt2,r]$, $[r,1/2]$ and $[1/2,1]$, whose count vectors are, in this order, those of $C$, $S$, $L$ and $m$ in Table~\ref{tab:counts}. The source rules that the program reports for these four count vectors are those induced by $C$, $S$, $L$ and $m$ on the input $(0,1,2)$.
+\end{proof}
+
+The breakpoints come from the following identities, each checked by expansion in SymPy:
+\begin{align}
+E_S(p)-E_C(p)&=p^4(2p^2-4p+1),\label{eq:CS}\\
+E_S(p)-E_L(p)&=pq\,(p-2q^4),\qquad 2q^4-p=(p-2)(2p^3-4p^2+4p-1),\label{eq:SL}\\
+E_L(p)-E_m(p)&=pq^2(p-q).\label{eq:Lm}
+\end{align}
+The roots of $2p^2-4p+1$ are $1\pm1/\sqrt2$, so by \eqref{eq:CS} $E_C<E_S$ on $(0,1-1/\sqrt2)$ and $E_S<E_C$ on $(1-1/\sqrt2,1)$. Let $g(p)=2p^3-4p^2+4p-1$. Its derivative $6p^2-8p+4$ has discriminant $-32$, so $g$ is strictly increasing and has one real root $r$; since $g(0)=-1$ and $g(1/2)=1/4$, $r\in(0,1/2)$, and numerically $r=0.352201\dots$. By \eqref{eq:SL}, $E_S-E_L=pq(2-p)g(p)$, which is negative on $(0,r)$ and positive on $(r,1)$. By \eqref{eq:Lm} the pieces of $L$ and $m$ meet at $p=1/2$. Equivalently, $r$ is the solution in $(0,1)$ of $p=2q^4$. These identities locate the crossings of neighbouring pieces; that no other source rule goes below the envelope is the content of the enumeration.
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+By Lemma~\ref{lem:restrict} and Proposition~\ref{prop:lower},
+\[
+\OPT_Q(p)\ge\OPT_3(p)=\min\{E_C,E_S,E_L,E_m\}.
+\]
+By Proposition~\ref{prop:upper}, $\OPT_Q(p)\le\min\{E_C,E_S,E_L,E_m\}$.
+\end{proof}
+
+\section{An independent check}\label{sec:check}
+
+The lower bound for $Q=3$ rests on the reduction of Section~\ref{sec:sources}. As a check that does not use it, the optimum was also computed over the full space of algorithms, with no reduction to sources, by a model for CP-SAT, the constraint programming (CP) solver of OR-Tools built on Boolean satisfiability (SAT) techniques \cite{ORTools}. At $p=a/b$ a pattern with $k$ delivered links gets the integer weight $a^k(b-a)^{6-k}$, out of $b^6$. The model has one Boolean variable for each view with at least two values that arises on an input with three distinct values and each value in that view, with exactly one value chosen per view. For each such input and pattern an indicator may be set only if some two processes decide the same value. An integer variable $t$ satisfies $t+\sum w\cdot(\text{indicator})\ge b^6$ for each input, where the sum runs over the patterns with their weights $w$, and the solver minimises $t$. So $t/b^6$ is the optimum. At each value of $p$ the solver reports an optimum $\OPT$ (in units of $b^{-6}$); as a control, adding the constraint $t\le\OPT-1$ makes the model infeasible and adding $t\le\OPT$ leaves it feasible. The algorithm it returns is evaluated again by direct simulation in rational arithmetic, with the same value.
+
+For $Q=3$ this was done at fifteen values of $p$, and for $Q=4$, where there are $24$ inputs with three distinct values and the reduction to sources does not apply, at five values. Table~\ref{tab:check} lists the results. In every case the value is that of Theorem~\ref{thm:main}, and for $Q=3$ it coincides with the lower envelope of Proposition~\ref{prop:lower} at all fifteen points. For $Q=4$ the points $2/5$ and $9/20$ lie in $(r,1/2)$, where the optimum is $E_L$. The algorithm returned for $Q=4$ at $p=2/5$ treats process~$1$ differently from the others, and it suggested the rule $L$. These values rely on the solver's proofs of infeasibility.
+
+\begin{table}[tbp]
+\centering
+\begin{tabular}{lccc}
+\toprule
+$p$ & $\OPT_3(p)$ & $\OPT_4(p)$ & piece\\
+\midrule
+$1/100$ & $4708866047/5000000000$ & & $C$\\
+$1/20$ & $1186807/1600000$ & & $C$\\
+$1/10$ & $3469/6250$ & & $C$\\
+$1/5$ & $1049/3125$ & $1049/3125$ & $C$\\
+$1/4$ & $143/512$ & & $C$\\
+$1/3$ & $170/729$ & $170/729$ & $S$\\
+$2/5$ & $117/625$ & $117/625$ & $L$\\
+$9/20$ & & $12221/80000$ & $L$\\
+$1/2$ & $1/8$ & & $L$, $m$\\
+$3/5$ & $8/125$ & $8/125$ & $m$\\
+$2/3$ & $1/27$ & & $m$\\
+$3/4$ & $1/64$ & & $m$\\
+$4/5$ & $1/125$ & & $m$\\
+$9/10$ & $1/1000$ & & $m$\\
+$19/20$ & $1/8000$ & & $m$\\
+$99/100$ & $1/1000000$ & & $m$\\
+\bottomrule
+\end{tabular}
+\caption{The optimum computed by CP-SAT over all algorithms, for three and four input values. A blank entry was not computed. The last column names the piece of Theorem~\ref{thm:main} containing $p$; its polynomial gives the value in each row.}\label{tab:check}
+\end{table}
+
+\section{Computations}
+All counts are exact integers and all values exact rationals or algebraic numbers. Three programs produce the results: an exhaustive enumeration of the $1728$ source rules with the exact lower envelope (Proposition~\ref{prop:lower}), a direct simulation of the rules $C$, $S$, $L$ and $m$ for $Q=3,\dots,6$ (Section~\ref{sec:upper}), and the CP-SAT model over all algorithms (Section~\ref{sec:check}). Appendix~\ref{app:notation} lists the symbols.
+
+\section*{Credits}
+The model and the observation that set agreement had not been studied in the stochastic setting are due to Fraigniaud, Patt-Shamir and Rajsbaum \cite{FPR}. The restriction to deterministic algorithms and the worst-input error measure follow their work \cite{FPR,FPR26}. Set agreement is due to Chaudhuri \cite{Chaudhuri}. The counting form \eqref{eq:counts} is used in the same way in the companion paper on consensus \cite{Companion}. Theorem~\ref{thm:main}, the reduction to sources and the permanent formula \eqref{eq:perm} (Lemma~\ref{lem:decouple} and Proposition~\ref{prop:sources}), the rules $C$, $S$, $L$ and $Z$ and their counts, the enumeration of Proposition~\ref{prop:lower}, the identities \eqref{eq:CS}--\eqref{eq:Lm} and the computations of Table~\ref{tab:check} are new. On two values the rule $m$ is the algorithm pref0 of \cite{FPR26}.
+
+\section*{Funding}
+The research presented in this paper was supported by the European Research Council (ERC) under the European Union's Horizon Europe research and innovation programme (grant agreement No.~101041711), by the Simons Foundation as part of the Collaboration on the Mathematical and Scientific Foundations of Deep Learning, by Heights Labs, by Convex Nexus Capital, by the Israel Science Foundation (grant number 2258/19), and by the Israel Science Foundation (ISF Grant 4101/25).
+
+\section*{Acknowledgments}
+This work was done by Claude (Anthropic), connected to Math Brain~\cite{MathBrainRepo} and working together inside the Brain framework~\cite{BrainFramework}, a shared, persistent memory in which the agents record claims, proofs, failed attempts and methods, retrieve one another's results, coordinate who works on what, and audit each other's work. For more on the Brain and Math Brain, see the Math Brain paper~\cite{MathBrainPaper}.
+
+\section*{Code and data availability}
+The code and the outputs of Section~\ref{sec:check} and Proposition~\ref{prop:lower} are at \url{https://github.com/yspennstate/two-set-agreement-three-processes}. The paper is part of the Math Brain project, whose public repository is \url{https://github.com/yspennstate/math-brain-public}~\cite{MathBrainRepo}.
+
+\section*{Declaration of generative AI and AI-assisted technologies}
+This paper is part of a broader research project on AI systems proving mathematical results. The computations, proofs and text were produced by Claude (Anthropic). The model is due to Fraigniaud, Patt-Shamir and Rajsbaum \cite{FPR}, who list set agreement among the tasks not yet studied in their stochastic setting. Anonymous algorithms for $Q\ge4$ on $(r,1/2)$, randomized algorithms, more rounds, more processes and other values of $k$ remain open. The author directed the work and is responsible for the content of the paper and for decisions concerning its dissemination.
+
+\section*{Declaration of competing interest}
+The author holds equity in Heights Labs and in Convex Nexus Capital and has a management role at Convex Nexus Capital. These entities are included in the funding declaration above.
+
+\appendix
+\section{Notation}\label{app:notation}
+Symbols are listed in the order in which they first appear.
+
+\begin{center}\begin{tabular}{@{}lp{0.52\textwidth}l@{}}\toprule
+Symbol & Meaning & First appears \\ \midrule
+$p$, $q$ & probability that a message is delivered; $q=1-p$ & Section~\ref{sec:intro} \\
+$k$ & number of values allowed in $k$-set agreement; elsewhere a number of delivered links or a process & Section~\ref{sec:intro} \\
+$Q$ & number of input values, inputs in $\{0,\dots,Q-1\}$ & Section~\ref{sec:intro} \\
+$x=(x_1,x_2,x_3)$ & input; $x_i$ is the input of process $i$ & Section~\ref{sec:model} \\
+$\delta_i$ & decision function of process $i$ on its views & Section~\ref{sec:model} \\
+$A$ & a deterministic one-round algorithm & Section~\ref{sec:model} \\
+$E_x(A)$, $E(A)$ & failure probability of $A$ on input $x$; its maximum over $x$ & Section~\ref{sec:model} \\
+$\OPT_Q(p)$ & least $E(A)$ over deterministic one-round algorithms & Section~\ref{sec:model} \\
+$c_k(A,x)$ & number of failing patterns with $k$ delivered links & \eqref{eq:counts} \\
+$C$, $S$, $L$, $m$ & the four rules & Section~\ref{sec:result} \\
+$E_C$, $E_S$, $E_L$, $E_m$ & their failure probabilities & Section~\ref{sec:result} \\
+$r$ & real root of $2x^3-4x^2+4x-1$, $r=0.352201\dots$ & Section~\ref{sec:intro} \\
+$Z$ & anonymous rule for $Q=3$ & Remark~\ref{rem:anon} \\
+$H_i$ & set of processes that process $i$ hears & Section~\ref{sec:sources} \\
+$\sigma=(\sigma_1,\sigma_2,\sigma_3)$ & source rule & Section~\ref{sec:sources} \\
+$M^\sigma$, $\operatorname{per}$ & source matrix; permanent & \eqref{eq:perm} \\
+$\mathrm{err}_\sigma(p)$, $c_k(\sigma)$ & failure probability and counts of $\sigma$ & \eqref{eq:perm} \\
+$h_a$ & holder of the value $a$ & proof of Proposition~\ref{prop:upper} \\
+$g$ & the polynomial $2p^3-4p^2+4p-1$ & Section~\ref{sec:lower} \\
+$a/b$ & $p$ as a fraction, for the integer weights $a^k(b-a)^{6-k}$ & Section~\ref{sec:check} \\
+$t$ & objective of the CP-SAT model & Section~\ref{sec:check} \\
+\bottomrule\end{tabular}\end{center}
+
+\begin{thebibliography}{9}
+\bibitem{FPR} P.~Fraigniaud, B.~Patt-Shamir and S.~Rajsbaum, Coordination through stochastic channels, in \emph{39th International Symposium on Distributed Computing (DISC 2025)}, LIPIcs 356 (2025), 32:1--32:19, doi:10.4230/LIPIcs.DISC.2025.32.
+\bibitem{FPR26} P.~Fraigniaud, B.~Patt-Shamir and S.~Rajsbaum, Consensus with stochastic broadcast, in \emph{40th International Symposium on Distributed Computing (DISC 2026)}, LIPIcs 397 (2026), 18:1--18:17, doi:10.4230/LIPIcs.DISC.2026.18.
+\bibitem{Companion} Y.~Shmalo, Optimal one-round consensus for three processes through stochastic channels, 2026, \url{https://github.com/yspennstate/one-round-consensus-three-processes}.
+\bibitem{Chaudhuri} S.~Chaudhuri, More choices allow more faults: set consensus problems in totally asynchronous systems, \emph{Information and Computation} 105 (1993), 132--158, doi:10.1006/inco.1993.1043.
+\bibitem{ORTools} L.~Perron and F.~Didier, CP-SAT, Google OR-Tools, version 9.15, 2026, \url{https://developers.google.com/optimization}.
+\bibitem{SymPy} A.~Meurer et al., SymPy: symbolic computing in Python, \emph{PeerJ Computer Science} 3 (2017), e103, doi:10.7717/peerj-cs.103.
+\bibitem{MathBrainRepo} Y.~Shmalo, \emph{Math Brain: public snapshot, code and tests}, 2026, \url{https://github.com/yspennstate/math-brain-public}.
+\bibitem{MathBrainPaper} Y.~Shmalo, \emph{Math Brain: shared, auditable memory for multi-agent mathematical research}, October 2026, doi:10.5281/zenodo.24150837.
+\bibitem{BrainFramework} Y.~Shmalo, \emph{Brain Framework}, public software repository, 2026, \url{https://github.com/yspennstate/brain-framework-public}.
+\end{thebibliography}
+
+\end{document}
